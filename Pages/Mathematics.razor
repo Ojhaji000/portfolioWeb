@@ -1,0 +1,220 @@
+﻿@page "/mathematics"
+
+<PageTitle>Mathematics</PageTitle>
+
+<!-- Header -->
+<section class="hero">
+    <h1>2D Shape Translation Using Matrix Transformation</h1>
+    <p class="subtitle">
+        Demonstrating coordinate geometry and linear algebra applied to graphical transformations.
+    </p>
+    <div class="tags">
+        <span>C#</span>
+        <span>Linear Algebra</span>
+        <span>Matrix Transformation</span>
+        <span>Graphics</span>
+    </div>
+</section>
+
+<!-- Problem Statement -->
+<section class="section">
+    <h2>Problem Statement</h2>
+    <p>
+        In computer graphics and CAD systems, geometric transformations such as translation,
+        rotation, and scaling are implemented using matrix operations. This project demonstrates
+        how a 2D shape can be translated in Cartesian space using homogeneous transformation matrices.
+    </p>
+</section>
+
+<!-- Mathematical Foundation -->
+<section class="section">
+    <h2>Mathematical Foundation</h2>
+    <p>
+        A 2D point <strong>(x, y)</strong> is represented in homogeneous coordinates as <strong>(x, y, 1)</strong>.
+        Translation is performed by multiplying this point with a 3×3 translation matrix.
+    </p>
+
+    <pre class="math">
+         --          --       -   -       -   -
+        |   1  0  tx   |     |  x  |     |  x' |
+        |   0  1  ty   |  X  |  y  |  =  |  y' |   &lt;== translated point/vector
+        |   0  0   1   |     |  1  |     |  1  |
+         --          --       -   -       -   -
+            /\                /\
+            ||                ||
+        Translation        Point/Vector  
+            matrix            to be translated
+    </pre>
+</section>
+
+<!-- Visual Demonstration -->
+<section class="section">
+    <h2>Visual Demonstration</h2>
+    <div class="visual-grid">
+        <div class="visual-card">
+            <h3>Before Translation</h3>
+            <img src="Images/beforeTranslation.png" alt="Original shape" />
+        </div>
+        <div class="visual-card">
+            <h3>After Translation</h3>
+            <img src="Images/afterTranslation.png" alt="Translated shape" />
+        </div>
+    </div>
+</section>
+
+<!-- Code Mapping -->
+<section class="section">
+    <h2>Matrix to Code Mapping</h2>
+    <p>
+        The following shows a short summary of the translation logic.
+    </p>
+
+    <!-- Short code snippet -->
+    <pre class="code">
+        translationMatrix -> it is made two different for two different mouse inputs
+        Translate() -> loops through points
+        Matrix.Multiply() -> applies transformation
+        Updates rectanglePoints with new coordinates
+    </pre>
+
+    <!-- Toggle button -->
+    <button class="btn btn-primary" @onclick="ToggleDetailedCode">
+        @(showDetailedCode ? "Hide Detailed Code" : "Show Detailed Code")
+    </button>
+
+    <!-- Detailed code snippet -->
+    @if (showDetailedCode)
+    {
+        <pre class="code">
+            ///////////////////////////////////////////
+            ///////////////////////////////////////////
+
+            // horizontal translation
+            float translateNum = notches * TranslationPxPerNotch;
+            float[,] translationMatrix = new float[3, 3]
+            {
+                { 1, 0, translateNum },
+                { 0, 1, 0 },
+                { 0, 0, 1 }
+            };
+            Translate(translationMatrix);
+
+            ////////////////////////////////////////////
+            ////////////////////////////////////////////
+
+            // vertical translation
+            float translateNum = -notches * TranslationPxPerNotch; // negative because screen Y axis is inverted in WINFORMS
+            float[,] translationMatrix = new float[3, 3]
+            {
+                { 1, 0, 0 },
+                { 0, 1, translateNum },
+                { 0, 0, 1 }
+            };
+            Translate(translationMatrix);
+
+            ////////////////////////////////////////////
+            ////////////////////////////////////////////
+
+            private void Translate(float[,] translationMatrix)
+            {
+                float[,] resultVector = new float[3,1];
+
+                for (int i = 0; i &lt rectanglePoints.Length; i++)
+                {
+                    float[,] pointVector = new float[3,1] 
+                    { 
+                        { rectanglePoints[i].X }, 
+                        { rectanglePoints[i].Y },
+                        { 1 } 
+                    };
+                    Matrix.Multiply(translationMatrix, pointVector, out resultVector);
+                    rectanglePoints[i] = new PointF(resultVector[0,0], resultVector[1,0]);
+                }
+            }
+
+            ////////////////////////////////////////////
+            ////////////////////////////////////////////
+
+            public static void Multiply(float[,]matrix1, float[,] matrix2, out float[,]resultantMatrix) 
+            {
+                if (matrix1.GetLength(1) != matrix2.GetLength(0))
+                {
+                    // matrix multiplication is not possible
+                    resultantMatrix = null;
+                    return;
+                }
+                (int row, int column) resultantMatrixSize = ( matrix1.GetLength(0), matrix2.GetLength(1));
+                resultantMatrix = new float[resultantMatrixSize.row, resultantMatrixSize.column];
+
+                // iterating over every row of first matrix
+                for (int i =0; i&ltmatrix1.GetLength(0); i++)
+                {
+
+                    // iterating over every column of matrix
+                    for (int j = 0; j&ltmatrix2.GetLength(1); j++)
+                    {
+
+                        // iterating over subsequent element, i.e.,
+                        // every subsequent element of first matrix row's and second matrix column's
+                        // both are of same length and it is a must matrix multiplication to happen
+                        for (int k = 0; k &lt matrix1.GetLength(1); k++)
+                        { 
+                            resultantMatrix[i,j] += matrix1[i,k] * matrix2[k,j];
+                        }
+                    }
+                }
+            }
+            
+            ////////////////////////////////////////////
+            ////////////////////////////////////////////
+        </pre>
+    }
+</section>
+
+@code {
+    private bool showDetailedCode = false;
+
+    private void ToggleDetailedCode()
+    {
+        showDetailedCode = !showDetailedCode;
+    }
+}
+<section class="section">
+    <h2>Source Code</h2>
+    <p>
+        You can explore the complete project on GitHub:
+        <a href="https://github.com/Ojhaji000/Transformation/tree/self_built_tranformation_function" target="_blank">
+            View Repository
+        </a>
+    </p>
+</section>
+<!-- Architecture -->
+<section class="section">
+    <h2>Design & Architecture</h2>
+    <ul>
+        <li>One rectangle is drawn and X-Y axis for reference</li>
+        <li>rectangleis represented as collection 2D points</li>
+        <li>Transformation logic is independent of rendering logic</li>
+        <li>Matrix-based approach enables easy extension to rotation and scaling</li>
+    </ul>
+</section>
+
+<!-- Edge Cases -->
+<section class="section">
+    <h2>Precision & Coordinate Considerations</h2>
+    <ul>
+        <li>Floating-point precision errors</li>
+        <li>Order of matrix multiplication</li>
+        <li>Inverted Y-axis in screen coordinates</li>
+    </ul>
+</section>
+
+<!-- Learnings -->
+<section class="section">
+    <h2>Learnings & Extensions</h2>
+    <ul>
+        <li>Matrix composition for multiple transformations</li>
+        <li>Rotation and scaling using the same framework</li>
+        <li>Porting the transformation logic to C++</li>
+    </ul>
+</section>
