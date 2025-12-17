@@ -1,0 +1,45 @@
+@* Reusable card for listing portfolio projects *@
+
+<div class="project-card" @onclick="Navigate">
+
+    <div class="card-body">
+        <h3>@Title</h3>
+
+        @if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <p class="description">@Description</p>
+        }
+
+        @if (Tags?.Any() == true)
+        {
+            <div class="tags">
+                @foreach (var tag in Tags)
+                {
+                    <span>@tag</span>
+                }
+            </div>
+        }
+
+        <div class="footer">
+            <span class="cta">View case study →</span>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public IEnumerable<string>? Tags { get; set; }
+    [Parameter] public string Link { get; set; } = string.Empty;
+
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+
+    private void Navigate()
+    {
+        if (!string.IsNullOrWhiteSpace(Link))
+        {
+            Nav.NavigateTo(Link);
+        }
+    }
+}
