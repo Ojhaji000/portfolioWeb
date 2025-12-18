@@ -1,0 +1,56 @@
+.about-container {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+.about-header h1 {
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 1.05rem;
+}
+
+.about-body {
+    margin-top: 2rem;
+    line-height: 1.6;
+}
+
+.about-skills {
+    margin-top: 2.5rem;
+}
+
+.about-skills ul {
+    padding-left: 1.2rem;
+}
+
+.about-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-photo {
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    border-radius: 8px; /* professional, not circular */
+    border: 1px solid #ddd;
+}
+.about-background,
+.about-contact {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e6e6e6;
+}
+
+.about-contact ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.about-contact li {
+    margin-bottom: 0.6rem;
+}
