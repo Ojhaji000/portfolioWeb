@@ -45,3 +45,9 @@
 .cta {
     color: #000;
 }
+
+.publish-date {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.5rem;
+}

@@ -1,0 +1,179 @@
+@page "/mathematics/shapeRotation"
+
+<PageTitle>Mathematics</PageTitle>
+
+<!-- Header -->
+
+<section class="hero">
+    <h1>2D Shape Rotation Using Matrix Transformation</h1>
+    <p class="subtitle">
+        This is <a class ="secondary" href="mathematics/shapeTranslation"><strong>the extension of 2D Translation project </strong></a>to rotational transformations.
+    </p>
+    <p class="publish-date">
+    Published on: <strong>22 December 2025</strong>
+</p>
+
+    <div class="tags">
+        <span>C#</span>
+        <span>Linear Algebra</span>
+        <span>Rotation Matrix</span>
+        <span>Graphics</span>
+    </div>
+</section>
+
+<!-- Problem Statement -->
+<section class="section">
+    <h2>Problem Statement</h2>
+    <p>
+        This project is just like the 2d translation, instead rotation is focused here.
+    </p>
+</section>
+
+
+<!-- Mathematical Foundation -->
+<section class="section">
+    <h2>Mathematical Foundation</h2>
+    <p>
+        A 2D point <strong>(x, y)</strong> is represented in homogeneous coordinates as
+        <strong>(x, y)</strong>. Rotation by an angle <strong>θ</strong> is performed using
+        a 2x2 rotation matrix, about the origin/z-axis.
+    </p>
+
+    <pre class="math">
+         --           --       -   -       -   -
+        | cosθ   -sinθ  |     |  x  |     |  x' |   &lt-- rotated point
+        | sinθ    cosθ  |  .  |  y  |  =  |  y' |   
+         --           --       -   -       -   -
+              ^                  ^  
+             / \                / \ 
+              |                  | 
+        Rotation matrix         Point to be rotated
+    </pre>
+</section>
+
+
+<!-- Visual Demonstration -->
+<section class="section">
+    <h2>Visual Demonstration</h2>
+    <div class="visual-grid">
+        <div class="visual-card">
+            <h3>Before Rotation</h3>
+            <img src="Images/beforeRotation.png" alt="Original shape" />
+        </div>
+        <div class="visual-card">
+            <h3>After Rotation</h3>
+            <img src="Images/afterRotation.png" alt="Rotated shape" />
+        </div>
+    </div>
+</section>
+
+
+<!-- Code Mapping -->
+<section class="section">
+    <h2>Matrix to Code Mapping</h2>
+    <p>
+        The following shows a short summary of the translation logic.
+    </p>
+
+    <!-- Short code snippet -->
+    <pre class="code">
+        rotationMatrix
+        Rotate() -> loops through points of the closed polygon
+        Matrix.Multiply() -> applies transformation by multiplying translation matrix with point(column matrix)
+        Updates rectanglePoints with new coordinates
+    </pre>
+
+    <!-- Toggle button -->
+    <button class="btn btn-primary" @onclick="ToggleDetailedCode">
+        @(showDetailedCode ? "Hide Detailed Code" : "Show Detailed Code")
+    </button>
+
+    <!-- Detailed code snippet -->
+    @if (showDetailedCode)
+    {
+        <pre class="code">
+            ///////////////////////////////////////////
+            ///////////////////////////////////////////
+                float rotationAngle = notches * RotationDegPerNotch;
+                _rotation -= rotationAngle;
+                double rotationAngleRad = (double)rotationAngle * (Math.PI / 180f);
+                float[,] rotationMatrix = new float[2,2]
+                    {{(float)Math.Cos(rotationAngleRad),-(float)Math.Sin(rotationAngleRad)},
+                    {(float)Math.Sin(rotationAngleRad),(float)Math.Cos(rotationAngleRad)}
+                };
+                Rotate(rotationMatrix);
+            
+            ////////////////////////////////////////////
+            ////////////////////////////////////////////
+
+             private void Rotate(float[,] rotationMatrix)
+        {
+            float[,] resultVector = new float[2, 1];
+
+            for (int i = 0; i &lt; rectanglePoints.Length; i++)
+            {
+                float[,] pointVector = new float[2, 1]{
+                    { rectanglePoints[i].X },
+                    { rectanglePoints[i].Y }
+                };
+                Matrix.Multiply(rotationMatrix, pointVector, out resultVector);
+                rectanglePoints[i] = new PointF(resultVector[0, 0], resultVector[1, 0]);
+            }
+        }
+
+            ////////////////////////////////////////////
+            ////////////////////////////////////////////
+
+            public static void Multiply(float[,]matrix1, float[,] matrix2, out float[,]resultantMatrix) 
+            {
+                if (matrix1.GetLength(1) != matrix2.GetLength(0))
+                {
+                    // matrix multiplication is not possible
+                    resultantMatrix = null;
+                    return;
+                }
+                (int row, int column) resultantMatrixSize = ( matrix1.GetLength(0), matrix2.GetLength(1));
+                resultantMatrix = new float[resultantMatrixSize.row, resultantMatrixSize.column];
+
+                // iterating over every row of first matrix
+                for (int i =0; i&ltmatrix1.GetLength(0); i++)
+                {
+
+                    // iterating over every column of matrix
+                    for (int j = 0; j&ltmatrix2.GetLength(1); j++)
+                    {
+
+                        // iterating over subsequent element, i.e.,
+                        // every subsequent element of first matrix row's and second matrix column's
+                        // both are of same length and it is a must matrix multiplication to happen
+                        for (int k = 0; k &lt matrix1.GetLength(1); k++)
+                        { 
+                            resultantMatrix[i,j] += matrix1[i,k] * matrix2[k,j];
+                        }
+                    }
+                }
+            }
+            
+            ////////////////////////////////////////////
+            ////////////////////////////////////////////
+        </pre>
+    }
+</section>
+
+@code {
+    private bool showDetailedCode = false;
+
+    private void ToggleDetailedCode()
+    {
+        showDetailedCode = !showDetailedCode;
+    }
+}
+<section class="section">
+    <h2>Source Code</h2>
+    <p>
+        You can explore the complete project on GitHub:
+        <a href="https://github.com/Ojhaji000/Transformation.git" target="_blank">
+            View Repository
+        </a>
+    </p>
+</section>
