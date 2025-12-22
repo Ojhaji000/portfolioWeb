@@ -1,17 +1,22 @@
-@page "/mathematics/shapeTranslation"
+@page "/mathematics/shapeRotation"
 
 <PageTitle>Mathematics</PageTitle>
 
 <!-- Header -->
+
 <section class="hero">
-    <h1>2D Shape Translation Using Matrix Transformation</h1>
+    <h1>2D Shape Rotation Using Matrix Transformation</h1>
     <p class="subtitle">
-        Demonstrating coordinate geometry and linear algebra applied to graphical transformations.
+        This is <a class ="secondary" href="mathematics/shapeTranslation"><strong>the extension of 2D Translation project </strong></a>to rotational transformations.
     </p>
+    <p class="publish-date">
+    Published on: <strong>22 December 2025</strong>
+</p>
+
     <div class="tags">
         <span>C#</span>
         <span>Linear Algebra</span>
-        <span>Matrix Transformation</span>
+        <span>Rotation Matrix</span>
         <span>Graphics</span>
     </div>
 </section>
@@ -20,47 +25,48 @@
 <section class="section">
     <h2>Problem Statement</h2>
     <p>
-        In computer graphics and CAD systems, geometric transformations such as translation,
-        rotation, and scaling are implemented using matrix operations. This project demonstrates
-        how a 2D shape can be translated in Cartesian space using homogeneous transformation matrices.
+        This project is just like the 2d translation, instead rotation is focused here.
     </p>
 </section>
+
 
 <!-- Mathematical Foundation -->
 <section class="section">
     <h2>Mathematical Foundation</h2>
     <p>
-        A 2D point <strong>(x, y)</strong> is represented in homogeneous coordinates as <strong>(x, y, 1)</strong>.
-        Translation is performed by multiplying this point with a 3×3 translation matrix.
+        A 2D point <strong>(x, y)</strong> is represented in homogeneous coordinates as
+        <strong>(x, y)</strong>. Rotation by an angle <strong>θ</strong> is performed using
+        a 2x2 rotation matrix, about the origin/z-axis.
     </p>
 
     <pre class="math">
-         --          --       -   -       -   -
-        |   1  0  tx   |     |  x  |     |  x' |
-        |   0  1  ty   |  X  |  y  |  =  |  y' |   &lt;== translated point/vector
-        |   0  0   1   |     |  1  |     |  1  |
-         --          --       -   -       -   -
-            /\                /\
-            ||                ||
-        Translation        Point/Vector  
-            matrix            to be translated
+         --           --       -   -       -   -
+        | cosθ   -sinθ  |     |  x  |     |  x' |   &lt-- rotated point
+        | sinθ    cosθ  |  .  |  y  |  =  |  y' |   
+         --           --       -   -       -   -
+              ^                  ^  
+             / \                / \ 
+              |                  | 
+        Rotation matrix         Point to be rotated
     </pre>
 </section>
+
 
 <!-- Visual Demonstration -->
 <section class="section">
     <h2>Visual Demonstration</h2>
     <div class="visual-grid">
         <div class="visual-card">
-            <h3>Before Translation</h3>
-            <img src="Images/beforeTranslation.png" alt="Original shape" />
+            <h3>Before Rotation</h3>
+            <img src="Images/beforeRotation.png" alt="Original shape" />
         </div>
         <div class="visual-card">
-            <h3>After Translation</h3>
-            <img src="Images/afterTranslation.png" alt="Translated shape" />
+            <h3>After Rotation</h3>
+            <img src="Images/afterRotation.png" alt="Rotated shape" />
         </div>
     </div>
 </section>
+
 
 <!-- Code Mapping -->
 <section class="section">
@@ -71,9 +77,9 @@
 
     <!-- Short code snippet -->
     <pre class="code">
-        translationMatrix -> it is made two different for two different mouse inputs
-        Translate() -> loops through points
-        Matrix.Multiply() -> applies transformation
+        rotationMatrix
+        Rotate() -> loops through points of the closed polygon
+        Matrix.Multiply() -> applies transformation by multiplying translation matrix with point(column matrix)
         Updates rectanglePoints with new coordinates
     </pre>
 
@@ -88,49 +94,32 @@
         <pre class="code">
             ///////////////////////////////////////////
             ///////////////////////////////////////////
+                float rotationAngle = notches * RotationDegPerNotch;
+                _rotation -= rotationAngle;
+                double rotationAngleRad = (double)rotationAngle * (Math.PI / 180f);
+                float[,] rotationMatrix = new float[2,2]
+                    {{(float)Math.Cos(rotationAngleRad),-(float)Math.Sin(rotationAngleRad)},
+                    {(float)Math.Sin(rotationAngleRad),(float)Math.Cos(rotationAngleRad)}
+                };
+                Rotate(rotationMatrix);
+            
+            ////////////////////////////////////////////
+            ////////////////////////////////////////////
 
-            // horizontal translation
-            float translateNum = notches * TranslationPxPerNotch;
-            float[,] translationMatrix = new float[3, 3]
+             private void Rotate(float[,] rotationMatrix)
+        {
+            float[,] resultVector = new float[2, 1];
+
+            for (int i = 0; i &lt; rectanglePoints.Length; i++)
             {
-                { 1, 0, translateNum },
-                { 0, 1, 0 },
-                { 0, 0, 1 }
-            };
-            Translate(translationMatrix);
-
-            ////////////////////////////////////////////
-            ////////////////////////////////////////////
-
-            // vertical translation
-            float translateNum = -notches * TranslationPxPerNotch; // negative because screen Y axis is inverted in WINFORMS
-            float[,] translationMatrix = new float[3, 3]
-            {
-                { 1, 0, 0 },
-                { 0, 1, translateNum },
-                { 0, 0, 1 }
-            };
-            Translate(translationMatrix);
-
-            ////////////////////////////////////////////
-            ////////////////////////////////////////////
-
-            private void Translate(float[,] translationMatrix)
-            {
-                float[,] resultVector = new float[3,1];
-
-                for (int i = 0; i &lt rectanglePoints.Length; i++)
-                {
-                    float[,] pointVector = new float[3,1] 
-                    { 
-                        { rectanglePoints[i].X }, 
-                        { rectanglePoints[i].Y },
-                        { 1 } 
-                    };
-                    Matrix.Multiply(translationMatrix, pointVector, out resultVector);
-                    rectanglePoints[i] = new PointF(resultVector[0,0], resultVector[1,0]);
-                }
+                float[,] pointVector = new float[2, 1]{
+                    { rectanglePoints[i].X },
+                    { rectanglePoints[i].Y }
+                };
+                Matrix.Multiply(rotationMatrix, pointVector, out resultVector);
+                rectanglePoints[i] = new PointF(resultVector[0, 0], resultVector[1, 0]);
             }
+        }
 
             ////////////////////////////////////////////
             ////////////////////////////////////////////
@@ -183,12 +172,12 @@
     <h2>Source Code</h2>
     <p>
         You can explore the complete project on GitHub:
-        <a href="https://github.com/Ojhaji000/Transformation/tree/self_built_tranformation_function" target="_blank">
+        <a href="https://github.com/Ojhaji000/Transformation.git" target="_blank">
             View Repository
         </a>
     </p>
 </section>
-<!-- Architecture -->
+@* <!-- Architecture -->
 <section class="section">
     <h2>Design & Architecture</h2>
     <ul>
@@ -217,4 +206,4 @@
         <li>Rotation and scaling using the same framework</li>
         <li>Porting the transformation logic to C++</li>
     </ul>
-</section>
+</section> *@
